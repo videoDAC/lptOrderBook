@@ -26,7 +26,9 @@ Bob also has TokenB.
 
 Alice would like to exchange `x` TokenA for `y` LPT.
 
-## Main Success Scenario
+## Use Cases
+
+### Main Success Scenario
 
 1. Alice deposits `x` TokenA into the contract, specifying
 
@@ -40,7 +42,7 @@ Alice would like to exchange `x` TokenA for `y` LPT.
 
 4. Alice withdraws `y` LPT.
 
-## Alternative Scenario 1
+### Alternative Scenario 1
 
 1. Alice deposits `x` TokenA into the contract, specifying
 
@@ -52,7 +54,7 @@ Alice would like to exchange `x` TokenA for `y` LPT.
 
 3. Alice withdraws `x` TokenA _after_ time `t`, and receives `z` TokenB
 
-## Alternative Scenario 2
+### Alternative Scenario 2
 
 1. Alice deposits `x` TokenA into the contract, specifying
 
