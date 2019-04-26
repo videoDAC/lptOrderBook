@@ -1,65 +1,95 @@
 # LPTFutures
 
-This repository is to store designs and implementation of smart contracts for trading LPT which currently exist in a bonded state.
-
 ## Context
 
-The Livepeer Token (LPT) is an ERC-20 Token on Ethereum, used to secure the Livepeer Protocol.
+The Livepeer Token (LPT) is an ERC-20 Token on Ethereum.
 
 Livepeer's Protocol provides incentives to LPT holders to bond these tokens to a node in Livepeer's network.
+
+While tokens are bonded, they cannot be transferred to another address.
+
+In order to transfer to another address, the tokens must first be unbonded.
 
 When a holder unbonds LPT from the node, they must wait for an _unbonding period_ before they can withdraw the LPT.
 
 During this _unbonding period_, the holder does not receive any rewards.
 
+DAI is an ERC-20 Token on Ethereum.
+
 ## Starting Situation
 
-Alice has TokenA.
+Alice has LPT, which is bonded to a node in Livepeer's network. Alice also has DAI.
 
-Bob has LPT bonded to a node in Livepeer's network.
-
-Bob also has TokenB.
-
-(TokenA and TokenB can be the same).
+Bob has DAI.
 
 ## Objective
 
-Alice would like to exchange `x` TokenA for `y` LPT.
+Alice would like to exchange `x` LPT for `y` DAI.
 
 ## Use Cases
 
-### Main Success Scenario
+### Scenario 1 - Failure
 
-1. Alice deposits `x` TokenA into the contract, specifying
+1. Alice:
 
-* `y` = the amount of LPT to be received in exchange for `x` TokenA
-* `z` = the amount of TokenB to be provided as security, and
-* `t` = the time by which the LPT must be delivered.
+- Defines `x` - the amount of LPT that Alice will provide
+- Defines `y` - the amount of DAI Alice will receive in exchange for `x` LPT
 
-2. Bob deposits `z` TokenB.
+- Defines `p` - the block by which Alice promises to provide the LPT
+- Defines `e` - the block by which the offer will expire
 
-3. Bob deposits `y` LPT _before_ time `t`, and receives `x` TokenA and `z` TokenB.
+- Deposits `z` DAI - which Alice will lose if she doesn't provide `x` LPT by block `p`
 
-4. Alice withdraws `y` LPT.
+2. Block `e` is mined
 
-### Alternative Scenario 1
+3. Alice withdraws `z` DAI
 
-1. Alice deposits `x` TokenA into the contract, specifying
+### Scenario 2 - Failure
 
-* `y` = the amount of LPT to be received in exchange for `x` TokenA
-* `z` = the amount of TokenB to be provided as security, and
-* `t` = the time when the offer expires
+1. Alice:
 
-2. Bob deposits `z` TokenB.
+- Defines `x` - the amount of LPT that Alice will provide
+- Defines `y` - the amount of DAI Alice will receive in exchange for `x` LPT
 
-3. Alice withdraws `x` TokenA _after_ time `t`, and receives `z` TokenB
+- Defines `p` - the block by which Alice promises to provide the LPT
+- Defines `e` - the block by which the offer will expire
 
-### Alternative Scenario 2
+- Deposits `z` DAI - which Alice will lose if she doesn't provide `x` LPT by block `p`
 
-1. Alice deposits `x` TokenA into the contract, specifying
+2. Alice withdraws `z` DAI
 
-* `y` = the amount of LPT to be received in exchange for `x` TokenA
-* `z` = the amount of TokenB to be provided as security, and
-* `t` = the time when the offer expires
+### Scenario 3 - Failure
 
-2. Alice withdraws `x` TokenA.
+1. Alice:
+
+- Defines `x` - the amount of LPT that Alice will provide
+- Defines `y` - the amount of DAI Alice will receive in exchange for `x` LPT
+
+- Defines `p` - the block by which Alice promises to provide the LPT
+- Defines `e` - the block by which the offer will expire
+
+- Deposits `z` DAI - which Alice will lose if she doesn't provide `x` LPT by block `p`
+
+2. Bob deposits `y` DAI
+
+3. Block `p` is mined
+
+4. Bob withdraws `y + z` DAI
+
+### Scenario 4 - Success
+
+1. Alice:
+
+- Defines `x` - the amount of LPT that Alice will provide
+- Defines `y` - the amount of DAI Alice will receive in exchange for `x` LPT
+
+- Defines `p` - the block by which Alice promises to provide the LPT
+- Defines `e` - the block by which the offer will expire
+
+- Deposits `z` DAI - which Alice will lose if she doesn't provide `x` LPT by block `p`
+
+2. Bob deposits `y` DAI
+
+3. Alice deposits `z` LPT and receives `y + z` DAI
+
+4. Bob withdraws `z` LPT.
