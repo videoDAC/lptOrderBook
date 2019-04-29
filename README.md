@@ -73,6 +73,6 @@ Alice would like to exchange `x` LPT for `y` DAI.
 
 2. Bob deposits `y` DAI
 
-3. Alice deposits `x` LPT and receives `y + z` DAI
+3. Alice deposits `x` LPT and receives `y` DAI (payment from Bob) and `z` DAI (provided initially by Alice)
 
 4. Bob withdraws `x` LPT.
