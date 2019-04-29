@@ -36,13 +36,12 @@ Alice would like to exchange `x` LPT for `y` DAI.
 - Defines `y` - the amount of DAI Alice will receive in exchange for `x` LPT
 
 - Defines `p` - the block by which Alice promises to provide the LPT
-- Defines `e` - the block by which the offer will expire
 
 - Deposits `z` DAI - which Alice will lose if she doesn't provide `x` LPT by block `p`
 
-2. Block `e` is mined
+2. Alice withdraws `z` DAI
 
-3. Alice withdraws `z` DAI
+3. Block `p` is mined
 
 ### Scenario 2 - Failure
 
@@ -52,21 +51,6 @@ Alice would like to exchange `x` LPT for `y` DAI.
 - Defines `y` - the amount of DAI Alice will receive in exchange for `x` LPT
 
 - Defines `p` - the block by which Alice promises to provide the LPT
-- Defines `e` - the block by which the offer will expire
-
-- Deposits `z` DAI - which Alice will lose if she doesn't provide `x` LPT by block `p`
-
-2. Alice withdraws `z` DAI
-
-### Scenario 3 - Failure
-
-1. Alice:
-
-- Defines `x` - the amount of LPT that Alice will provide
-- Defines `y` - the amount of DAI Alice will receive in exchange for `x` LPT
-
-- Defines `p` - the block by which Alice promises to provide the LPT
-- Defines `e` - the block by which the offer will expire
 
 - Deposits `z` DAI - which Alice will lose if she doesn't provide `x` LPT by block `p`
 
@@ -76,7 +60,7 @@ Alice would like to exchange `x` LPT for `y` DAI.
 
 4. Bob withdraws `y + z` DAI
 
-### Scenario 4 - Success
+### Scenario 3 - Success
 
 1. Alice:
 
@@ -84,7 +68,6 @@ Alice would like to exchange `x` LPT for `y` DAI.
 - Defines `y` - the amount of DAI Alice will receive in exchange for `x` LPT
 
 - Defines `p` - the block by which Alice promises to provide the LPT
-- Defines `e` - the block by which the offer will expire
 
 - Deposits `z` DAI - which Alice will lose if she doesn't provide `x` LPT by block `p`
 
