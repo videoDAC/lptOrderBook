@@ -34,10 +34,9 @@ Alice would like to exchange `x` LPT for `y` DAI.
 
 - Defines `x` - the amount of LPT that Alice will provide
 - Defines `y` - the amount of DAI Alice will receive in exchange for `x` LPT
-
 - Defines `p` - the block by which Alice promises to provide the LPT
 
-- Deposits `z` DAI - which Alice will lose if she doesn't provide `x` LPT by block `p`
+- Sends `z` DAI - a deposit which Alice will lose if she doesn't provide `x` LPT by block `p`
 
 2. Alice withdraws `z` DAI
 
@@ -49,12 +48,11 @@ Alice would like to exchange `x` LPT for `y` DAI.
 
 - Defines `x` - the amount of LPT that Alice will provide
 - Defines `y` - the amount of DAI Alice will receive in exchange for `x` LPT
-
 - Defines `p` - the block by which Alice promises to provide the LPT
 
-- Deposits `z` DAI - which Alice will lose if she doesn't provide `x` LPT by block `p`
+- Sends `z` DAI - a deposit which Alice will lose if she doesn't provide `x` LPT by block `p`
 
-2. Bob deposits `y` DAI
+2. Bob sends `y` DAI.
 
 3. Block `p` is mined
 
@@ -66,17 +64,14 @@ Alice would like to exchange `x` LPT for `y` DAI.
 
 - Defines `x` - the amount of LPT that Alice will provide
 - Defines `y` - the amount of DAI Alice will receive in exchange for `x` LPT
-
 - Defines `p` - the block by which Alice promises to provide the LPT
 
-- Deposits `z` DAI - which Alice will lose if she doesn't provide `x` LPT by block `p`
+- Sends `z` DAI - a deposit which Alice will lose if she doesn't provide `x` LPT by block `p`
 
-2. Bob deposits `y` DAI
+2. Bob sends `y` DAI.
 
-3. Alice
+3. Alice sends `x` LPT, and receives `y + z` DAI (payment from Bob + initial deposit from Alice).
 
-- Deposits `x` LPT
-- Receives `y` DAI (payment from Bob)
-- Receives `z` DAI (provided initially by Alice)
+`x` LPT is sent to Bob.
 
-- Sends `x` LPT to Bob
+4. Block `p` is mined
