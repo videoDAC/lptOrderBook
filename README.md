@@ -40,7 +40,7 @@ Alice would like to exchange `x` LPT for `y` DAI.
 
 2. Alice withdraws `z` DAI
 
-3. Block `p` is mined
+
 
 ### Scenario 2 - Failure
 
