@@ -10,30 +10,26 @@ contract TimeLockedLptOrder {
 
     using SafeMath for uint256;
 
-    address internal constant ZERO_ADDRESS = address(0);
+    address private constant ZERO_ADDRESS = address(0);
 
     string internal constant ERROR_SELL_ORDER_COMMITTED_TO = "LPT_ORDER_SELL_ORDER_COMMITTED_TO";
     string internal constant ERROR_SELL_ORDER_NOT_COMMITTED_TO = "LPT_ORDER_SELL_ORDER_NOT_COMMITTED_TO";
-    string internal constant ERROR_COLLATERAL_TRANSFER_FAILED = "LPT_ORDER_COLLATERAL_TRANSFER_FAILED";
-    string internal constant ERROR_PAYMENT_TRANSFER_FAILED = "LPT_ORDER_PAYMENT_TRANSFER_FAILED";
-    string internal constant ERROR_LPT_TRANSFER_FAILED = "LPT_ORDER_LPT_TRANSFER_FAILED";
     string internal constant ERROR_INITIALISED_ORDER = "LPT_ORDER_INITIALISED_ORDER";
     string internal constant ERROR_UNINITIALISED_ORDER = "LPT_ORDER_UNINITIALISED_ORDER";
     string internal constant ERROR_COMMITMENT_WITHIN_UNBONDING_PERIOD = "LPT_ORDER_COMMITMENT_WITHIN_UNBONDING_PERIOD";
     string internal constant ERROR_NOT_BUYER = "LPT_ORDER_NOT_BUYER";
 
     struct LptSellOrder {
-        uint256 lptValue;
-        uint256 paymentValue; // In DAI
-        uint256 collateralValue; // In DAI
+        uint256 lptSellValue;
+        uint256 daiPaymentValue;
+        uint256 daiCollateralValue;
         uint256 deliveredByBlock;
         address buyerAddress;
     }
 
     IController livepeerController;
     IERC20 daiToken;
-    // One sell order per address
-    mapping(address => LptSellOrder) public lptSellOrders;
+    mapping(address => LptSellOrder) public lptSellOrders; // One sell order per address for simplicity
 
     constructor(address _livepeerController, address _daiToken) public {
         livepeerController = IController(_livepeerController);
@@ -41,19 +37,20 @@ contract TimeLockedLptOrder {
     }
 
     /*
-    * @notice Create an LPT sell order, requires approval for this contract to spend `_collateralValue` amount of DAI.
-    * @param _lptValue Value of LPT to sell
-    * @param _paymentValue Value required in exchange for LPT
-    * @param _collateralValue Value of collateral
+    * @notice Create an LPT sell order, requires approval for this contract to spend `_daiCollateralValue` amount of DAI.
+    * @param _lptSellValue Value of LPT to sell
+    * @param _daiPaymentValue Value required in exchange for LPT
+    * @param _daiCollateralValue Value of collateral
     * @param _deliveredByBlock Order filled or cancelled by this block or the collateral can be claimed
     */
-    function createLptSellOrder(uint256 _lptValue, uint256 _paymentValue, uint256 _collateralValue, uint256 _deliveredByBlock) public {
+    function createLptSellOrder(uint256 _lptSellValue, uint256 _daiPaymentValue, uint256 _daiCollateralValue, uint256 _deliveredByBlock) public {
         LptSellOrder storage lptSellOrder = lptSellOrders[msg.sender];
 
-        require(lptSellOrder.collateralValue == 0, ERROR_INITIALISED_ORDER);
-        require(daiToken.transferFrom(msg.sender, address(this), _collateralValue), ERROR_COLLATERAL_TRANSFER_FAILED);
+        require(lptSellOrder.daiCollateralValue == 0, ERROR_INITIALISED_ORDER);
 
-        lptSellOrders[msg.sender] = LptSellOrder(_lptValue, _paymentValue, _collateralValue, _deliveredByBlock, ZERO_ADDRESS);
+        daiToken.transferFrom(msg.sender, address(this), _daiCollateralValue);
+
+        lptSellOrders[msg.sender] = LptSellOrder(_lptSellValue, _daiPaymentValue, _daiCollateralValue, _deliveredByBlock, ZERO_ADDRESS);
     }
 
     /*
@@ -64,7 +61,7 @@ contract TimeLockedLptOrder {
 
         require(lptSellOrder.buyerAddress == ZERO_ADDRESS, ERROR_SELL_ORDER_COMMITTED_TO);
 
-        daiToken.transfer(msg.sender, lptSellOrder.collateralValue);
+        daiToken.transfer(msg.sender, lptSellOrder.daiCollateralValue);
         delete lptSellOrders[msg.sender];
     }
 
@@ -75,12 +72,13 @@ contract TimeLockedLptOrder {
     function commitToBuyLpt(address _sellOrderCreator) public {
         LptSellOrder storage lptSellOrder = lptSellOrders[_sellOrderCreator];
 
-        require(lptSellOrder.lptValue > 0, ERROR_UNINITIALISED_ORDER);
+        require(lptSellOrder.lptSellValue > 0, ERROR_UNINITIALISED_ORDER);
         require(lptSellOrder.buyerAddress == ZERO_ADDRESS, ERROR_SELL_ORDER_COMMITTED_TO);
-        require(lptSellOrder.deliveredByBlock.sub(_getUnbondingPeriodLength()) < block.number, ERROR_COMMITMENT_WITHIN_UNBONDING_PERIOD);
-        require(daiToken.transferFrom(msg.sender, address(this), lptSellOrder.paymentValue), ERROR_PAYMENT_TRANSFER_FAILED);
+        require(lptSellOrder.deliveredByBlock.sub(_getUnbondingPeriodLength()) > block.number, ERROR_COMMITMENT_WITHIN_UNBONDING_PERIOD);
 
-        lptSellOrders[_sellOrderCreator].buyerAddress = msg.sender;
+        daiToken.transferFrom(msg.sender, address(this), lptSellOrder.daiPaymentValue);
+
+        lptSellOrder.buyerAddress = msg.sender;
     }
 
     /*
@@ -94,12 +92,12 @@ contract TimeLockedLptOrder {
         require(lptSellOrder.buyerAddress == msg.sender, ERROR_NOT_BUYER);
         require(lptSellOrder.deliveredByBlock < block.number);
 
-        uint256 totalValue = lptSellOrder.paymentValue.add(lptSellOrder.collateralValue);
+        uint256 totalValue = lptSellOrder.daiPaymentValue.add(lptSellOrder.daiCollateralValue);
         daiToken.transfer(msg.sender, totalValue);
     }
 
     /*
-    * @notice Fulfill sell order, requires approval for this contract spend the orders LPT value.
+    * @notice Fulfill sell order, requires approval for this contract spend the orders LPT value from the seller.
     *         Returns the collateral and payment to the LPT seller.
     */
     function fulfillSellOrder() public {
@@ -108,9 +106,9 @@ contract TimeLockedLptOrder {
         require(lptSellOrder.buyerAddress != ZERO_ADDRESS, ERROR_SELL_ORDER_NOT_COMMITTED_TO);
 
         IERC20 livepeerToken = IERC20(_getLivepeerContractAddress("LivepeerToken"));
-        require(livepeerToken.transferFrom(msg.sender, lptSellOrder.buyerAddress, lptSellOrder.lptValue), ERROR_LPT_TRANSFER_FAILED);
+        livepeerToken.transferFrom(msg.sender, lptSellOrder.buyerAddress, lptSellOrder.lptSellValue);
 
-        uint256 totalValue = lptSellOrder.paymentValue.add(lptSellOrder.collateralValue);
+        uint256 totalValue = lptSellOrder.daiPaymentValue.add(lptSellOrder.daiCollateralValue);
         daiToken.transfer(msg.sender, totalValue);
     }
 
