@@ -6,7 +6,7 @@ import "./livepeerInterface/IController.sol";
 import "./livepeerInterface/IBondingManager.sol";
 import "./livepeerInterface/IRoundsManager.sol";
 
-contract TimeLockedLptOrder {
+contract LptOrderBook {
 
     using SafeMath for uint256;
 
@@ -18,6 +18,7 @@ contract TimeLockedLptOrder {
     string internal constant ERROR_UNINITIALISED_ORDER = "LPT_ORDER_UNINITIALISED_ORDER";
     string internal constant ERROR_COMMITMENT_WITHIN_UNBONDING_PERIOD = "LPT_ORDER_COMMITMENT_WITHIN_UNBONDING_PERIOD";
     string internal constant ERROR_NOT_BUYER = "LPT_ORDER_NOT_BUYER";
+    string internal constant ERROR_STILL_WITHIN_LOCK_PERIOD = "LPT_ORDER_STILL_WITHIN_LOCK_PERIOD";
 
     struct LptSellOrder {
         uint256 lptSellValue;
@@ -90,7 +91,7 @@ contract TimeLockedLptOrder {
         LptSellOrder storage lptSellOrder = lptSellOrders[_sellOrderCreator];
 
         require(lptSellOrder.buyerAddress == msg.sender, ERROR_NOT_BUYER);
-        require(lptSellOrder.deliveredByBlock < block.number);
+        require(lptSellOrder.deliveredByBlock < block.number, ERROR_STILL_WITHIN_LOCK_PERIOD);
 
         uint256 totalValue = lptSellOrder.daiPaymentValue.add(lptSellOrder.daiCollateralValue);
         daiToken.transfer(msg.sender, totalValue);

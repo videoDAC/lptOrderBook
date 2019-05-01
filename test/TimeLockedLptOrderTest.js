@@ -1,4 +1,4 @@
-const TimeLockedLptOrder = artifacts.require("TimeLockedLptOrder")
+const LptOrderBook = artifacts.require("LptOrderBook")
 const ControllerMock = artifacts.require('ControllerMock')
 const BondingManagerMock = artifacts.require('BondingManagerMock')
 const RoundsManagerMock = artifacts.require('RoundsManagerMock')
@@ -19,7 +19,7 @@ const advanceBlocks = async blocks => {
 const advanceToBlock = async block =>
     await advanceBlocks(block - await latestBlock())
 
-contract('TimeLockedLptOrder', ([sellOrderCreator, sellOrderBuyer]) => {
+contract('LptOrderBook', ([sellOrderCreator, sellOrderBuyer, notSellOrderBuyer]) => {
 
     this.unbondingPeriodRounds = 7
     this.roundLengthBlocks = 2
@@ -34,15 +34,15 @@ contract('TimeLockedLptOrder', ([sellOrderCreator, sellOrderBuyer]) => {
         const bondingManager = await BondingManagerMock.new(this.unbondingPeriodRounds)
         const roundsManager = await RoundsManagerMock.new(this.roundLengthBlocks)
         const controller = await ControllerMock.new(this.livepeerToken.address, bondingManager.address, roundsManager.address)
-        this.timeLockedLptOrder = await TimeLockedLptOrder.new(controller.address, this.daiToken.address)
+        this.lptOrderBook = await LptOrderBook.new(controller.address, this.daiToken.address)
     })
 
     context('createLptSellOrder(lptSellValue, daiPaymentValue, daiCollateralValue, deliveredByBlock)', () => {
 
         beforeEach(async () => {
-            this.deliveredByBlock = (await latestBlock()).add(new BN(20))
-            await this.daiToken.approve(this.timeLockedLptOrder.address, this.daiCollateralValue)
-            await this.timeLockedLptOrder.createLptSellOrder(this.lptSellValue, this.daiPaymentValue, this.daiCollateralValue, this.deliveredByBlock)
+            this.deliveredByBlock = (await latestBlock()).add(new BN(25))
+            await this.daiToken.approve(this.lptOrderBook.address, this.daiCollateralValue)
+            await this.lptOrderBook.createLptSellOrder(this.lptSellValue, this.daiPaymentValue, this.daiCollateralValue, this.deliveredByBlock)
         })
 
         it('creates correct LPT sell order', async () => {
@@ -52,7 +52,7 @@ contract('TimeLockedLptOrder', ([sellOrderCreator, sellOrderBuyer]) => {
                 daiCollateralValue,
                 deliveredByBlock,
                 buyerAddress
-            } = await this.timeLockedLptOrder.lptSellOrders(sellOrderCreator)
+            } = await this.lptOrderBook.lptSellOrders(sellOrderCreator)
 
             await assertEqualBN(lptSellValue, this.lptSellValue)
             await assertEqualBN(daiPaymentValue, this.daiPaymentValue)
@@ -61,16 +61,17 @@ contract('TimeLockedLptOrder', ([sellOrderCreator, sellOrderBuyer]) => {
             assert.strictEqual(buyerAddress, ZERO_ADDRESS)
         })
 
-        it('reverts on creating a second LPT sell order', async () => {
-            await this.daiToken.approve(this.timeLockedLptOrder.address, this.daiCollateralValue)
-            await assertRevert(this.timeLockedLptOrder.createLptSellOrder(this.lptSellValue, this.daiPaymentValue,
+        it
+        ('reverts on creating a second LPT sell order', async () => {
+            await this.daiToken.approve(this.lptOrderBook.address, this.daiCollateralValue)
+            await assertRevert(this.lptOrderBook.createLptSellOrder(this.lptSellValue, this.daiPaymentValue,
                 this.daiCollateralValue, this.deliveredByBlock), "LPT_ORDER_INITIALISED_ORDER")
         })
 
         context('cancelLptSellOrder()', () => {
 
             it('deletes the sell order', async () => {
-                await this.timeLockedLptOrder.cancelLptSellOrder()
+                await this.lptOrderBook.cancelLptSellOrder()
 
                 const {
                     lptSellValue,
@@ -78,7 +79,7 @@ contract('TimeLockedLptOrder', ([sellOrderCreator, sellOrderBuyer]) => {
                     daiCollateralValue,
                     deliveredByBlock,
                     buyerAddress
-                } = await this.timeLockedLptOrder.lptSellOrders(sellOrderCreator)
+                } = await this.lptOrderBook.lptSellOrders(sellOrderCreator)
                 await assertEqualBN(lptSellValue, 0)
                 await assertEqualBN(daiPaymentValue, 0)
                 await assertEqualBN(daiCollateralValue, 0)
@@ -90,17 +91,17 @@ contract('TimeLockedLptOrder', ([sellOrderCreator, sellOrderBuyer]) => {
                 const originalDaiBalance = await this.daiToken.balanceOf(sellOrderCreator)
                 const expectedDaiBalance = new BN(originalDaiBalance).add(new BN(this.daiCollateralValue))
 
-                await this.timeLockedLptOrder.cancelLptSellOrder()
+                await this.lptOrderBook.cancelLptSellOrder()
 
                 const actualDaiBalance = await this.daiToken.balanceOf(sellOrderCreator)
                 assert.isTrue(actualDaiBalance.eq(expectedDaiBalance))
             })
 
             it('can create new sell order', async () => {
-                await this.timeLockedLptOrder.cancelLptSellOrder()
-                await this.daiToken.approve(this.timeLockedLptOrder.address, this.daiCollateralValue)
+                await this.lptOrderBook.cancelLptSellOrder()
+                await this.daiToken.approve(this.lptOrderBook.address, this.daiCollateralValue)
 
-                await this.timeLockedLptOrder.createLptSellOrder(this.lptSellValue, this.daiPaymentValue, this.daiCollateralValue, this.deliveredByBlock)
+                await this.lptOrderBook.createLptSellOrder(this.lptSellValue, this.daiPaymentValue, this.daiCollateralValue, this.deliveredByBlock)
 
                 const {
                     lptSellValue,
@@ -108,7 +109,7 @@ contract('TimeLockedLptOrder', ([sellOrderCreator, sellOrderBuyer]) => {
                     daiCollateralValue,
                     deliveredByBlock,
                     buyerAddress
-                } = await this.timeLockedLptOrder.lptSellOrders(sellOrderCreator)
+                } = await this.lptOrderBook.lptSellOrders(sellOrderCreator)
                 await assertEqualBN(lptSellValue, this.lptSellValue)
                 await assertEqualBN(daiPaymentValue, this.daiPaymentValue)
                 await assertEqualBN(daiCollateralValue, this.daiCollateralValue)
@@ -121,43 +122,99 @@ contract('TimeLockedLptOrder', ([sellOrderCreator, sellOrderBuyer]) => {
 
             beforeEach(async () => {
                 await this.daiToken.transfer(sellOrderBuyer, this.daiPaymentValue)
-                await this.daiToken.approve(this.timeLockedLptOrder.address, this.daiPaymentValue, {from: sellOrderBuyer})
+                await this.daiToken.approve(this.lptOrderBook.address, this.daiPaymentValue, {from: sellOrderBuyer})
             })
 
             it('reverts when there is no sell order', async () => {
-                await this.timeLockedLptOrder.cancelLptSellOrder()
+                await this.lptOrderBook.cancelLptSellOrder()
 
-                await assertRevert(this.timeLockedLptOrder.commitToBuyLpt(sellOrderCreator, {from: sellOrderBuyer}), "LPT_ORDER_UNINITIALISED_ORDER")
+                await assertRevert(this.lptOrderBook.commitToBuyLpt(sellOrderCreator, {from: sellOrderBuyer}), "LPT_ORDER_UNINITIALISED_ORDER")
             })
 
             it('reverts when already committed too', async () => {
-                await this.timeLockedLptOrder.commitToBuyLpt(sellOrderCreator, {from: sellOrderBuyer})
+                await this.lptOrderBook.commitToBuyLpt(sellOrderCreator, {from: sellOrderBuyer})
 
-                await assertRevert(this.timeLockedLptOrder.commitToBuyLpt(sellOrderCreator), "LPT_ORDER_SELL_ORDER_COMMITTED_TO")
+                await assertRevert(this.lptOrderBook.commitToBuyLpt(sellOrderCreator), "LPT_ORDER_SELL_ORDER_COMMITTED_TO")
             })
 
             it('reverts when within unbonding period', async () => {
                 await advanceToBlock(this.deliveredByBlock - 5)
 
-                await assertRevert(this.timeLockedLptOrder.commitToBuyLpt(sellOrderCreator, {from: sellOrderBuyer}), "LPT_ORDER_COMMITMENT_WITHIN_UNBONDING_PERIOD")
+                await assertRevert(this.lptOrderBook.commitToBuyLpt(sellOrderCreator, {from: sellOrderBuyer}), "LPT_ORDER_COMMITMENT_WITHIN_UNBONDING_PERIOD")
             })
 
-            it('transfers the dai to the timeLockedLptOrder contract', async () => {
-                const originalDaiBalance = await this.daiToken.balanceOf(this.timeLockedLptOrder.address)
+            it('transfers the dai to the lptOrderBook contract', async () => {
+                const originalDaiBalance = await this.daiToken.balanceOf(this.lptOrderBook.address)
                 const expectedDaiBalance = originalDaiBalance.add(new BN(this.daiPaymentValue))
 
-                await this.timeLockedLptOrder.commitToBuyLpt(sellOrderCreator, {from: sellOrderBuyer})
+                await this.lptOrderBook.commitToBuyLpt(sellOrderCreator, {from: sellOrderBuyer})
 
-                const actualDaiBalance = await this.daiToken.balanceOf(this.timeLockedLptOrder.address)
+                const actualDaiBalance = await this.daiToken.balanceOf(this.lptOrderBook.address)
                 assert.isTrue(actualDaiBalance.eq(expectedDaiBalance))
             })
 
             it('sets the correct buyer address on the sell order', async () => {
-                await this.timeLockedLptOrder.commitToBuyLpt(sellOrderCreator, {from: sellOrderBuyer})
+                await this.lptOrderBook.commitToBuyLpt(sellOrderCreator, {from: sellOrderBuyer})
 
-                const { buyerAddress } = await this.timeLockedLptOrder.lptSellOrders(sellOrderCreator)
+                const {buyerAddress} = await this.lptOrderBook.lptSellOrders(sellOrderCreator)
 
                 assert.strictEqual(buyerAddress, sellOrderBuyer)
+            })
+
+            context('claimCollateralAndPayment(address _sellOrderCreator)', () => {
+
+                beforeEach(async () => {
+                    await this.lptOrderBook.commitToBuyLpt(sellOrderCreator, {from: sellOrderBuyer})
+                })
+
+                it('transfers collateral and payment in dai back to the buy order committer', async () => {
+                    const originalDaiBalance = await this.daiToken.balanceOf(sellOrderBuyer)
+                    const expectedDaiBalance = originalDaiBalance.add(new BN(this.daiPaymentValue + this.daiCollateralValue))
+                    await advanceToBlock(this.deliveredByBlock)
+
+                    await this.lptOrderBook.claimCollateralAndPayment(sellOrderCreator, {from: sellOrderBuyer})
+
+                    const actualDaiBalance = await this.daiToken.balanceOf(sellOrderBuyer)
+                    assert.isTrue(actualDaiBalance.eq(expectedDaiBalance))
+                })
+
+                it("reverts if deliveredByBlock hasn't passed yet", async () => {
+                    await advanceToBlock(this.deliveredByBlock - 1)
+
+                    await assertRevert(this.lptOrderBook.claimCollateralAndPayment(sellOrderCreator, {from: sellOrderBuyer}), "LPT_ORDER_STILL_WITHIN_LOCK_PERIOD")
+                })
+
+                it('reverts if not called by buyer of a sell order', async () => {
+                    await advanceToBlock(this.deliveredByBlock)
+
+                    await assertRevert(this.lptOrderBook.claimCollateralAndPayment(sellOrderCreator, {from: notSellOrderBuyer}), "LPT_ORDER_NOT_BUYER")
+                })
+            })
+
+            context('fulfillSellOrder()', () => {
+
+                beforeEach(async () => {
+                    await this.livepeerToken.approve(this.lptOrderBook.address, this.lptSellValue)
+                })
+
+                it('transfers collateral and payment to seller and lpt to buyer', async () => {
+                    const originalBuyerDaiBalance = await this.daiToken.balanceOf(sellOrderCreator)
+                    const expectedBuyerDaiBalance = originalBuyerDaiBalance.add(new BN(this.daiPaymentValue + this.daiCollateralValue))
+                    const originalSellerLptBalance = await this.livepeerToken.balanceOf(sellOrderBuyer)
+                    const expectedSellerLptBalance = originalSellerLptBalance.add(new BN(this.daiPaymentValue + this.daiCollateralValue))
+                    await this.lptOrderBook.commitToBuyLpt(sellOrderCreator, {from: sellOrderBuyer})
+
+                    await this.lptOrderBook.fulfillSellOrder()
+
+                    const actualBuyerDaiBalance = await this.daiToken.balanceOf(sellOrderCreator)
+                    const actualSellerLptBalance = await this.livepeerToken.balanceOf(sellOrderBuyer)
+                    assert.isTrue(actualBuyerDaiBalance.eq(expectedBuyerDaiBalance))
+                    assert.isTrue(actualSellerLptBalance.eq(expectedSellerLptBalance))
+                })
+
+                it('reverts if there is no buyer', async () => {
+                    await assertRevert(this.lptOrderBook.fulfillSellOrder(), "LPT_ORDER_SELL_ORDER_NOT_COMMITTED_TO")
+                })
             })
         })
     })
