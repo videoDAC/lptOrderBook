@@ -230,6 +230,25 @@ contract('LptOrderBook', ([sellOrderCreator, sellOrderBuyer, notSellOrderBuyer])
                     assert.isTrue(actualSellerLptBalance.eq(expectedSellerLptBalance))
                 })
 
+                it('deletes the sell order', async () => {
+                    await this.lptOrderBook.commitToBuyLpt(sellOrderCreator, {from: sellOrderBuyer})
+
+                    await this.lptOrderBook.fulfillSellOrder()
+
+                    const {
+                        lptSellValue,
+                        daiPaymentValue,
+                        daiCollateralValue,
+                        deliveredByBlock,
+                        buyerAddress
+                    } = await this.lptOrderBook.lptSellOrders(sellOrderCreator)
+                    await assertEqualBN(lptSellValue,0)
+                    await assertEqualBN(daiPaymentValue, 0)
+                    await assertEqualBN(daiCollateralValue, 0)
+                    await assertEqualBN(deliveredByBlock, 0)
+                    assert.strictEqual(buyerAddress, ZERO_ADDRESS)
+                })
+
                 it('reverts if there is no buyer', async () => {
                     await assertRevert(this.lptOrderBook.fulfillSellOrder(), "LPT_ORDER_SELL_ORDER_NOT_COMMITTED_TO")
                 })

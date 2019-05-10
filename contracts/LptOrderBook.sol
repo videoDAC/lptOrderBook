@@ -111,6 +111,8 @@ contract LptOrderBook {
 
         uint256 totalValue = lptSellOrder.daiPaymentValue.add(lptSellOrder.daiCollateralValue);
         daiToken.transfer(msg.sender, totalValue);
+
+        delete lptSellOrders[msg.sender];
     }
 
     function _getLivepeerContractAddress(string memory _livepeerContract) internal view returns (address) {
