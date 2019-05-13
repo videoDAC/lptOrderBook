@@ -30,7 +30,7 @@ Alice would like to exchange `x` LPT for `y` DAI.
 
 ### Scenario 1 - Failure
 
-1. Alice:
+1. Alice creates the order:
 
 - Defines `x` - the amount of LPT that Alice will provide
 - Defines `y` - the amount of DAI Alice will receive in exchange for `x` LPT
@@ -38,13 +38,11 @@ Alice would like to exchange `x` LPT for `y` DAI.
 
 - Sends `z` DAI - a deposit which Alice will lose if she doesn't provide `x` LPT by block `p`
 
-2. Alice withdraws `z` DAI
-
-
+2. Alice cancels the order, and withdraws `z` DAI
 
 ### Scenario 2 - Failure
 
-1. Alice:
+1. Alice creates the order:
 
 - Defines `x` - the amount of LPT that Alice will provide
 - Defines `y` - the amount of DAI Alice will receive in exchange for `x` LPT
@@ -52,7 +50,7 @@ Alice would like to exchange `x` LPT for `y` DAI.
 
 - Sends `z` DAI - a deposit which Alice will lose if she doesn't provide `x` LPT by block `p`
 
-2. Bob sends `y` DAI.
+2. Bob fills the order, sending `y` DAI.
 
 3. Block `p` is mined
 
@@ -60,7 +58,7 @@ Alice would like to exchange `x` LPT for `y` DAI.
 
 ### Scenario 3 - Success
 
-1. Alice:
+1. Alice creates the order:
 
 - Defines `x` - the amount of LPT that Alice will provide
 - Defines `y` - the amount of DAI Alice will receive in exchange for `x` LPT
@@ -68,10 +66,10 @@ Alice would like to exchange `x` LPT for `y` DAI.
 
 - Sends `z` DAI - a deposit which Alice will lose if she doesn't provide `x` LPT by block `p`
 
-2. Bob sends `y` DAI.
+2. Bob fills the order, sending `y` DAI.
 
-3. Alice sends `x` LPT, and receives `y + z` DAI (payment from Bob + initial deposit from Alice).
+3. Alice sends `x` LPT, and receives `y + z` DAI (`y` payment from Bob + `z` initial deposit from Alice).
 
 `x` LPT is sent to Bob.
 
-4. Block `p` is mined
+4. Block `p` is mined.
