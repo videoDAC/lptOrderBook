@@ -2,17 +2,7 @@
 
 ## Context
 
-The Livepeer Token (LPT) is an ERC-20 Token on Ethereum.
-
-Livepeer's Protocol provides incentives to LPT holders to bond these tokens to a node in Livepeer's network.
-
-While tokens are bonded, they cannot be transferred to another address.
-
-In order to transfer to another address, the tokens must first be unbonded.
-
-When a holder unbonds LPT from the node, they must wait for an _unbonding period_ before they can withdraw the LPT.
-
-During this _unbonding period_, the holder does not receive any rewards.
+The Livepeer Token (LPT) is an ERC-20 Token on Ethereum. Livepeer's Protocol provides incentives to LPT holders to bond these tokens to a node in Livepeer's network. While tokens are bonded, they cannot be transferred to another address. In order to transfer to another address, the tokens must first be unbonded. When a holder unbonds LPT from the node, they must wait for an _unbonding period_ before they can withdraw the LPT. During this _unbonding period_, the holder does not receive any rewards.
 
 DAI is an ERC-20 Token on Ethereum.
 
@@ -71,5 +61,3 @@ Alice would like to exchange `x` LPT for `y` DAI.
 3. Alice sends `x` LPT, and receives `y + z` DAI (`y` payment from Bob + `z` initial deposit from Alice).
 
 `x` LPT is sent to Bob.
-
-4. Block `p` is mined.
