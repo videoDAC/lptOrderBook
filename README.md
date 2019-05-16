@@ -4,7 +4,7 @@
 
 [Livepeer Token](https://etherscan.io/token/0x58b6a8a3302369daec383334672404ee733ab239) (LPT) is an ERC-20 Token on Ethereum. 
 
-[DAI](https://etherscan.io/token/0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359) is another ERC-20 Token on Ethereum.
+[Dai Stablecoin v1.0](https://etherscan.io/token/0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359) (DAI) is another ERC-20 Token on Ethereum.
 
 ## Context and Objectives
 
