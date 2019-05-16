@@ -2,19 +2,19 @@
 
 ## Context
 
-[Livepeer Token](https://etherscan.io/token/0x58b6a8a3302369daec383334672404ee733ab239) (LPT) is an ERC-20 Token on Ethereum. 
-
-Livepeer's Protocol provides incentives to LPT holders to bond (stake, delegate) tokens to Livepeer's Network.
-
-For a holder to transfer bonded LPT to another address, they must unbond and wait for an _unbonding period_. 
+[Livepeer Token](https://etherscan.io/token/0x58b6a8a3302369daec383334672404ee733ab239) (LPT) is an ERC-20 Token on Ethereum. Livepeer's Protocol provides incentives to LPT holders to bond (stake, delegate) tokens to Livepeer's Network. For a holder to transfer their bonded LPT to another address, they must unbond and wait for an `unbonding period`.
 
 [Dai Stablecoin v1.0](https://etherscan.io/token/0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359) (DAI) is another ERC-20 Token on Ethereum.
 
 ## Context and Objectives
 
-**Alice** has LPT, which is bonded to a node in Livepeer's network. Alice also has DAI. **Bob** has DAI.
+**Alice** has LPT, which is bonded to a node in Livepeer's network. **Alice** also has DAI.
+
+**Bob** has DAI.
 
 **Alice** would like to exchange `x` LPT for `y` DAI.
+
+**Bob** would like to exchange `y` DAI for `x` LPT.
 
 ## Use Cases
 
@@ -55,5 +55,7 @@ For a holder to transfer bonded LPT to another address, they must unbond and wai
 - Sends `z` DAI - a deposit which **Alice** will put at risk if she doesn't provide `x` LPT by block `p`
 
 2. **Bob** fills the order, sending `y` DAI.
+
+*Independently of this process, **Alice** unbonds `x` LPT, and waits for the `unbonding period` before withdrawing.*
 
 3. **Alice** sends `x` LPT, and receives `y + z` DAI. **Bob** receives `x` LPT.
