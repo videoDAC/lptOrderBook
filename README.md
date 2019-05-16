@@ -1,18 +1,16 @@
-# lptOrderBook
+# lptDaiFutureOrderBook
 
 ## Context
 
 [Livepeer Token](https://etherscan.io/token/0x58b6a8a3302369daec383334672404ee733ab239) (LPT) is an ERC-20 Token on Ethereum. 
 
-Livepeer's Protocol provides incentives to LPT holders to bond (stake, delegate) tokens to Livepeer's Network.
-
-For a holder to transfer bonded LPT to another address, they must unbond and wait for an _unbonding period_. 
-
-DAI is an ERC-20 Token on Ethereum.
+[DAI](https://etherscan.io/token/0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359) is another ERC-20 Token on Ethereum.
 
 ## Context and Objectives
 
-**Alice** has LPT, which is bonded to a node in Livepeer's network. Alice also has DAI. **Bob** has DAI.
+**Alice** has LPT, which will not become available to her until a specific time in the future. Alice also has DAI.
+
+**Bob** has DAI.
 
 **Alice** would like to exchange `x` LPT for `y` DAI.
 
