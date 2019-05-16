@@ -10,11 +10,9 @@ For a holder to transfer bonded LPT to another address, they must unbond and wai
 
 DAI is an ERC-20 Token on Ethereum.
 
-## Starting Situation
+## Context and Objectives
 
 **Alice** has LPT, which is bonded to a node in Livepeer's network. Alice also has DAI. **Bob** has DAI.
-
-## Objective
 
 **Alice** would like to exchange `x` LPT for `y` DAI.
 
