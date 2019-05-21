@@ -61,4 +61,4 @@
 
 *Independently of this process, **Alice** unbonds `x` LPT, and waits for the `unbonding period` before withdrawing.*
 
-3. **Alice** sends `x` LPT, and receives `y + z` DAI. **Bob** receives `x` LPT.
+3. **Alice** sends `x` LPT, and receives `y + z` DAI. **Bob** receives `x` LPT. 
