@@ -19,7 +19,7 @@ const TEST_NETWORKS = {
 const testnet = TEST_NETWORKS.LOCAL
 
 const contextualIt = testnet === TEST_NETWORKS.LOCAL ? it : it.skip
-const contextualContext = testnet === TEST_NETWORKS.LOCAL ? context : context.skip
+const contextualDescribe = testnet === TEST_NETWORKS.LOCAL ? describe : describe.skip
 const assertRevert = testnet === TEST_NETWORKS.LOCAL ? assertRevertLocal : assertRevertTestnet
 
 const advanceBlocks = async blocks => {
@@ -56,7 +56,7 @@ contract('LptOrderBook', ([sellOrderCreator, sellOrderBuyer, notSellOrderBuyer])
         }
     })
 
-    context('createLptSellOrder(lptSellValue, daiPaymentValue, daiCollateralValue, deliveredByBlock)', () => {
+    describe('createLptSellOrder(lptSellValue, daiPaymentValue, daiCollateralValue, deliveredByBlock)', () => {
 
         beforeEach(async () => {
             this.deliveredByBlock = (await latestBlock()).add(new BN(this.unbondingPeriodBlocks + 10))
@@ -86,7 +86,15 @@ contract('LptOrderBook', ([sellOrderCreator, sellOrderBuyer, notSellOrderBuyer])
                 this.daiCollateralValue, this.deliveredByBlock), "LPT_ORDER_INITIALISED_ORDER")
         })
 
-        context('cancelLptSellOrder()', () => {
+        it('reverts when specifying delivered by block to the past', async () => {
+            await this.lptOrderBook.cancelLptSellOrder()
+            await this.daiToken.approve(this.lptOrderBook.address, this.daiCollateralValue)
+
+            await assertRevert(this.lptOrderBook.createLptSellOrder(this.lptSellValue, this.daiPaymentValue,
+                this.daiCollateralValue, await latestBlock()), "LPT_ORDER_DELIVERED_BY_IN_PAST")
+        })
+
+        describe('cancelLptSellOrder()', () => {
 
             it('deletes the sell order', async () => {
                 await this.lptOrderBook.cancelLptSellOrder()
@@ -136,7 +144,7 @@ contract('LptOrderBook', ([sellOrderCreator, sellOrderBuyer, notSellOrderBuyer])
             })
         })
 
-        context('commitToBuyLpt(address _sellOrderCreator)', () => {
+        describe('commitToBuyLpt(address _sellOrderCreator)', () => {
 
             beforeEach(async () => {
                 await this.daiToken.transfer(sellOrderBuyer, this.daiPaymentValue)
@@ -179,7 +187,7 @@ contract('LptOrderBook', ([sellOrderCreator, sellOrderBuyer, notSellOrderBuyer])
                 assert.strictEqual(buyerAddress, sellOrderBuyer)
             })
 
-            contextualContext('claimCollateralAndPayment(address _sellOrderCreator)', () => {
+            contextualDescribe('claimCollateralAndPayment(address _sellOrderCreator)', () => {
 
                 beforeEach(async () => {
                     await this.lptOrderBook.commitToBuyLpt(sellOrderCreator, {from: sellOrderBuyer})
@@ -209,7 +217,7 @@ contract('LptOrderBook', ([sellOrderCreator, sellOrderBuyer, notSellOrderBuyer])
                 })
             })
 
-            contextualContext('fulfillSellOrder()', () => {
+            contextualDescribe('fulfillSellOrder()', () => {
 
                 beforeEach(async () => {
                     await this.livepeerToken.approve(this.lptOrderBook.address, this.lptSellValue)
@@ -242,7 +250,7 @@ contract('LptOrderBook', ([sellOrderCreator, sellOrderBuyer, notSellOrderBuyer])
                         deliveredByBlock,
                         buyerAddress
                     } = await this.lptOrderBook.lptSellOrders(sellOrderCreator)
-                    await assertEqualBN(lptSellValue,0)
+                    await assertEqualBN(lptSellValue, 0)
                     await assertEqualBN(daiPaymentValue, 0)
                     await assertEqualBN(daiCollateralValue, 0)
                     await assertEqualBN(deliveredByBlock, 0)

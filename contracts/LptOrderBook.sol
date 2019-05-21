@@ -12,6 +12,7 @@ contract LptOrderBook {
 
     address private constant ZERO_ADDRESS = address(0);
 
+    string internal constant ERROR_DELIVERED_BY_IN_PAST = "LPT_ORDER_DELIVERED_BY_IN_PAST";
     string internal constant ERROR_SELL_ORDER_COMMITTED_TO = "LPT_ORDER_SELL_ORDER_COMMITTED_TO";
     string internal constant ERROR_SELL_ORDER_NOT_COMMITTED_TO = "LPT_ORDER_SELL_ORDER_NOT_COMMITTED_TO";
     string internal constant ERROR_INITIALISED_ORDER = "LPT_ORDER_INITIALISED_ORDER";
@@ -48,6 +49,7 @@ contract LptOrderBook {
         LptSellOrder storage lptSellOrder = lptSellOrders[msg.sender];
 
         require(lptSellOrder.daiCollateralValue == 0, ERROR_INITIALISED_ORDER);
+        require(_deliveredByBlock > block.number, ERROR_DELIVERED_BY_IN_PAST);
 
         daiToken.transferFrom(msg.sender, address(this), _daiCollateralValue);
 
