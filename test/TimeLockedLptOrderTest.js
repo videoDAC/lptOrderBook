@@ -41,7 +41,7 @@ contract('LptOrderBook', ([sellOrderCreator, sellOrderBuyer, notSellOrderBuyer])
     this.daiPaymentValue = 20
     this.daiCollateralValue = 10
 
-    beforeEach(async () => {
+    beforeEach(async () => { 
         this.livepeerToken = await TestErc20.new()
         this.daiToken = await TestErc20.new()
 
