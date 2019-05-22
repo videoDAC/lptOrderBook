@@ -17,7 +17,6 @@ contract LptOrderBook {
     string internal constant ERROR_SELL_ORDER_NOT_COMMITTED_TO = "LPT_ORDER_SELL_ORDER_NOT_COMMITTED_TO";
     string internal constant ERROR_INITIALISED_ORDER = "LPT_ORDER_INITIALISED_ORDER";
     string internal constant ERROR_UNINITIALISED_ORDER = "LPT_ORDER_UNINITIALISED_ORDER";
-    string internal constant ERROR_COMMITMENT_WITHIN_UNBONDING_PERIOD = "LPT_ORDER_COMMITMENT_WITHIN_UNBONDING_PERIOD";
     string internal constant ERROR_NOT_BUYER = "LPT_ORDER_NOT_BUYER";
     string internal constant ERROR_STILL_WITHIN_LOCK_PERIOD = "LPT_ORDER_STILL_WITHIN_LOCK_PERIOD";
 
@@ -77,7 +76,6 @@ contract LptOrderBook {
 
         require(lptSellOrder.lptSellValue > 0, ERROR_UNINITIALISED_ORDER);
         require(lptSellOrder.buyerAddress == ZERO_ADDRESS, ERROR_SELL_ORDER_COMMITTED_TO);
-        require(lptSellOrder.deliveredByBlock.sub(_getUnbondingPeriodLength()) > block.number, ERROR_COMMITMENT_WITHIN_UNBONDING_PERIOD);
 
         daiToken.transferFrom(msg.sender, address(this), lptSellOrder.daiPaymentValue);
 
@@ -120,15 +118,5 @@ contract LptOrderBook {
     function _getLivepeerContractAddress(string memory _livepeerContract) internal view returns (address) {
         bytes32 contractId = keccak256(abi.encodePacked(_livepeerContract));
         return livepeerController.getContract(contractId);
-    }
-
-    function _getUnbondingPeriodLength() internal view returns (uint256) {
-        IBondingManager bondingManager = IBondingManager(_getLivepeerContractAddress("BondingManager"));
-        uint64 unbondingPeriodRounds = bondingManager.unbondingPeriod();
-
-        IRoundsManager roundsManager = IRoundsManager(_getLivepeerContractAddress("RoundsManager"));
-        uint256 roundLength = roundsManager.roundLength();
-
-        return roundLength.mul(unbondingPeriodRounds);
     }
 }
