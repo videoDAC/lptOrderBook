@@ -16,9 +16,9 @@
 
 **Alice** would like to exchange `x` LPT for `y` DAI.
 
-**Alice** would like to be certain that she will receive `y` DAI before she unbonds `x` LPT and waits for the `unbonding period` to lapse.
-
 **Bob** would like to exchange `y` DAI for `x` LPT.
+
+**Alice** would like to be certain that they will receive `y` DAI before they unbond `x` LPT and waits for the `unbonding period` to lapse.
 
 ## Use Cases
 
