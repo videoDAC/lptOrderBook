@@ -1,5 +1,9 @@
 # lptOrderBook
 
+## Overview
+
+lptOrderBook is a mechanism to allows a buyer and a seller to commit to a deal which involves the seller delivering Livepeer Tokens (LPT) before an agreed block height of Ethereum's blockchain.
+
 ## Context
 
 [Livepeer Token](https://etherscan.io/token/0x58b6a8a3302369daec383334672404ee733ab239) (LPT) is an ERC-20 Token on Ethereum. Livepeer's Protocol rewards LPT holders for bonding (staking, delegating) tokens to Livepeer's Network. For a holder to transfer their bonded LPT to another address, they must unbond and wait for an `unbonding period`.
