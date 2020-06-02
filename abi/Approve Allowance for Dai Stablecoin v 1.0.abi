@@ -1,0 +1,5 @@
+[{"constant":false,"inputs":[{"name":"guy","type":"address"},{"name":"wad","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"src","type":"address"},{"name":"guy","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]
+
+
+
+LPT Futures - BUY - Step 1. Approve guy=0xd43FF5612420c8bcc6316DCc15FEDfb4b791df32, wad=10000000000000000000000000, thenGoTo=oneclickdapp.comneuron-mammal
