@@ -14,7 +14,7 @@ lptOrderBook is a mechanism to allows a buyer and a seller to commit to a deal w
 
 ## Context and Objectives
 
-**Alice** has LPT, which is bonded to a node in Livepeer's network. **Alice** also has DAI.
+**Alice** has LPT, which is bonded to a node in Livepeer's network, and is earning Rewards and Fees. **Alice** also has DAI.
 
 **Bob** has DAI.
 
